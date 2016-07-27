@@ -1,0 +1,1 @@
+# SAMP-dialogs.inc
