@@ -5,7 +5,7 @@
 
 /*
  * dialogs.inc
- * Version: v2.7 (last updated: 29 June, 2016)
+ * Version: v2.7.1 (last updated: 30 June, 2016)
  * By Gammix
  *
  * Functions:
@@ -531,7 +531,7 @@ stock ShowPlayerPreviewModelDialog(playerid, dialogid, style, caption[], models[
 	p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
 	p_Dialog[playerid][E_PLAYER_DIALOG_PAGE] = 0;
 
-	Dialog_SetPage(playerid, 0, 0);
+	Dialog_SetPage(playerid, 0);
 	SelectTextDraw(playerid, Dialog_SetOpacity(0xD15454FF, 200));
 
 	return true;
