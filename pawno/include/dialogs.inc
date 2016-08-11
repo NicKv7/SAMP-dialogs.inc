@@ -5,7 +5,7 @@
 
 /*
  * dialogs.inc
- * Version: v2.7.1 (last updated: 30 June, 2016)
+ * Version: v2.7.2 (last updated: 11 August, 2016)
  * By Gammix
  *
  * Functions:
@@ -128,7 +128,7 @@ static Dialog_Init(playerid, style, caption[], button1[], button2[])
 			Dialog_Create(playerid, 278.000000, 311.000000, "button1", 50, 1, 0.129998, 0.799998, -36, 2, 0, 1, 1, 0, .show = 1);
 		else
             Dialog_Create(playerid, 278.000000, 311.000000, button1, 50, 1, 0.129998, 0.799998, -36, 2, 0, 1, 1, 0, .show = 1);
-			
+
 		Dialog_Create(playerid, 372.000000, 310.000000, "_", 50, 1, 0.000000, -0.400001, -1, 0, 0, 1, 1, 1, -106, 323.000000, 19.000000, .show = 1);
 		Dialog_Create(playerid, 372.000000, 324.000000, "_", 50, 1, 0.000000, -0.400001, -1, 0, 0, 1, 1, 1, -106, 323.000000, 19.000000, .show = 1);
 		Dialog_Create(playerid, 323.000000, 304.000000, "(", 0, 1, 0.210000, 2.000000, -106, 0, 0, 1, 1, .show = 1);
@@ -195,90 +195,49 @@ static Dialog_Exit(playerid)
   	}
 
   	p_DialogTextDrawPool[playerid] = 0;
-
-	static varname[45];
-  	for (new i; i < p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS]; i++)
-  	{
-		format(varname, sizeof (varname), "DialogModel_%i", i);
-  	    DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogLabel_%i", i);
-	  	DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogRotX_%i", i);
-	  	DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogRotY_%i", i);
-	  	DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogRotZ_%i", i);
-	  	DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogRotZoom_%i", i);
-	  	DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogColor1_%i", i);
-	  	DeletePVar(playerid, varname);
-
-		format(varname, sizeof (varname), "DialogColor2_%i", i);
-	  	DeletePVar(playerid, varname);
-  	}
 }
 
-static Dialog_SetListitemInfo(playerid, id, model, label[], Float:x, Float:y, Float:z, Float:zoom, color1, color2)
+static Dialog_GetListitem(playerid, listitem, &model, label[], &Float:x, &Float:y, &Float:z, &Float:zoom, &color1, &color2, maxlength = sizeof (label))
 {
-	static varname[45];
-	format(varname, sizeof (varname), "DialogModel_%i", id);
-	SetPVarInt(playerid, varname, model);
+	static string[DIALOG_MAX_LISTITEM_SIZE];
+	format(string, sizeof (string), "DialogListitem_%i", listitem);
+	GetPVarString(playerid, string, string, DIALOG_MAX_LISTITEM_SIZE);
 
-	format(varname, sizeof (varname), "DialogLabel_%i", id);
-	SetPVarString(playerid, varname, label);
+	static dest[(DIALOG_MAX_LISTITEM_SIZE / 2)];
+	
+	new type;
+	new pos;
+	for (new i; i < DIALOG_MAX_LISTITEM_SIZE; i++)
+	{
+	    if (string[i] == '|' || i == (DIALOG_MAX_LISTITEM_SIZE - 1))
+	    {
+	        strmid(dest, string, pos, i);
+	        pos = (i + 1);
 
-	format(varname, sizeof (varname), "DialogRotX_%i", id);
-	SetPVarFloat(playerid, varname, x);
-
-	format(varname, sizeof (varname), "DialogRotY_%i", id);
-	SetPVarFloat(playerid, varname, y);
-
-	format(varname, sizeof (varname), "DialogRotZ_%i", id);
-	SetPVarFloat(playerid, varname, z);
-
-	format(varname, sizeof (varname), "DialogRotZoom_%i", id);
-	SetPVarFloat(playerid, varname, zoom);
-
-	format(varname, sizeof (varname), "DialogColor1_%i", id);
-	SetPVarInt(playerid, varname, color1);
-
-	format(varname, sizeof (varname), "DialogColor2_%i", id);
-	SetPVarInt(playerid, varname, color2);
+	        switch (type)
+	        {
+	            case 0: model = strval(dest);
+	            case 1: format(label, maxlength, dest);
+	            case 2: x = floatstr(dest);
+	            case 3: y = floatstr(dest);
+	            case 4: z = floatstr(dest);
+	            case 5: zoom = floatstr(dest);
+	            case 6: color1 = strval(dest);
+	            case 7: color2 = strval(dest);
+	        }
+	        type++;
+	    }
+	}
 }
 
-static Dialog_GetListitemInfo(playerid, id, &model, label[], &Float:x, &Float:y, &Float:z, &Float:zoom, &color1, &color2)
+static Dialog_SetListitem(playerid, listitem, model, label[], Float:x, Float:y, Float:z, Float:zoom, color1, color2)
 {
+	static string[DIALOG_MAX_LISTITEM_SIZE];
+	format(string, DIALOG_MAX_LISTITEM_SIZE, "%i|%s|%f|%f|%f|%f|%i|%i", model, label, x, y, z, zoom, color1, color2);
+	
 	static varname[45];
-	format(varname, sizeof (varname), "DialogModel_%i", id);
-	model = GetPVarInt(playerid, varname);
-
-	format(varname, sizeof (varname), "DialogLabel_%i", id);
-	GetPVarString(playerid, varname, label, DIALOG_MAX_LISTITEM_SIZE);
-
-	format(varname, sizeof (varname), "DialogRotX_%i", id);
-	x = GetPVarFloat(playerid, varname);
-
-	format(varname, sizeof (varname), "DialogRotY_%i", id);
-	y = GetPVarFloat(playerid, varname);
-
-	format(varname, sizeof (varname), "DialogRotZ_%i", id);
-	z = GetPVarFloat(playerid, varname);
-
-	format(varname, sizeof (varname), "DialogRotZoom_%i", id);
-	zoom = GetPVarFloat(playerid, varname);
-
-	format(varname, sizeof (varname), "DialogColor1_%i", id);
-	color1 = GetPVarInt(playerid, varname);
-
-	format(varname, sizeof (varname), "DialogColor2_%i", id);
-	color2 = GetPVarInt(playerid, varname);
+	format(varname, sizeof (varname), "DialogListitem_%i", listitem);
+	SetPVarString(playerid, varname, string);
 }
 
 static Dialog_SetPage(playerid, page)
@@ -299,7 +258,7 @@ static Dialog_SetPage(playerid, page)
 				p_DialogCompnent[playerid][E_DIALOG_COMPONENT_SCROLL] = Dialog_Create(playerid, 455.000000, (144.000000 + (whiles * page)), "_", 0, 1, 0.000000, (whiles / 16.200000), 0, .usebox = 1, .boxcolor = Dialog_SetOpacity(0xD15454FF, 200), .textsizeX = 458.000000, .textsizeY = 0.000000, .show = 1);
 	  		}
 
-	  		new listitem, index, model, label[DIALOG_MAX_LISTITEM_SIZE], Float:x, Float:y, Float:z, Float:zoom, color1, color2;
+	  		new listitem, index, model, label[DIALOG_MAX_LISTITEM_SIZE / 2], Float:x, Float:y, Float:z, Float:zoom, color1, color2;
 			for (new i; i < 24; i++)
 			{
 			    listitem = ((page * 24) + i);
@@ -312,7 +271,7 @@ static Dialog_SetPage(playerid, page)
 				    continue;
 				}
 
-			    Dialog_GetListitemInfo(playerid, listitem, model, label, x, y, z, zoom, color1, color2);
+				Dialog_GetListitem(playerid, listitem, model, label, x, y, z, zoom, color1, color2);
 				if (model < 0 || model > 20000)
 				 	continue;
 
@@ -347,7 +306,7 @@ static Dialog_SetPage(playerid, page)
 				p_DialogCompnent[playerid][E_DIALOG_COMPONENT_SCROLL] = Dialog_Create(playerid, 455.000000, (144.000000 + (whiles * page)), "_", 0, 1, 0.000000, (whiles / 16.200000), 0, .usebox = 1, .boxcolor = Dialog_SetOpacity(0xD15454FF, 200), .textsizeX = 458.000000, .textsizeY = 0.000000, .show = 1);
 	  		}
 
-	  		new listitem, index, model, label[DIALOG_MAX_LISTITEM_SIZE], Float:x, Float:y, Float:z, Float:zoom, color1, color2;
+	  		new listitem, index, model, label[DIALOG_MAX_LISTITEM_SIZE / 2], Float:x, Float:y, Float:z, Float:zoom, color1, color2;
 			for (new i; i < 5; i++)
 			{
 			    listitem = ((page * 5) + i);
@@ -361,7 +320,7 @@ static Dialog_SetPage(playerid, page)
 				    continue;
 				}
 
-			    Dialog_GetListitemInfo(playerid, listitem, model, label, x, y, z, zoom, color1, color2);
+				Dialog_GetListitem(playerid, listitem, model, label, x, y, z, zoom, color1, color2);
 				if (model < 0 || model > 20000)
 				 	continue;
 
@@ -445,8 +404,8 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
 			new pos;
 			static str[5 + DIALOG_MAX_LISTITEM_SIZE];
 			static str_model[5];
-			static str_label[DIALOG_MAX_LISTITEM_SIZE];
-			
+			static str_label[DIALOG_MAX_LISTITEM_SIZE / 2];
+
             for (new i, j = strlen(info); i < j; i++)
 			{
 			    if (info[i] == '\n')
@@ -459,7 +418,7 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
 					strmid(str, info, pos, j);
 				}
 				else continue;
-				
+
 				for (new x, y = strlen(str); x < y; x++)
 				{
 				    if (str[x] == '\t')
@@ -475,8 +434,8 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
      					break;
 				    }
 				}
-				
-            	Dialog_SetListitemInfo(playerid, (p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS]++), strval(str_model), str_label, 0.0, 0.0, 0.0, 1.0, -1, -1);
+
+				Dialog_SetListitem(playerid, (p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS]++), strval(str_model), str_label, 0.0, 0.0, 0.0, 1.0, -1, -1);
 			}
 
 			p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
@@ -499,7 +458,7 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
 #endif
 #define ShowPlayerDialog Dialog_ShowToPlayer
 
-stock ShowPlayerPreviewModelDialog(playerid, dialogid, style, caption[], models[], labels[][], button1[], button2[], limit = sizeof (models))
+stock ShowPlayerPreviewModelDialog(playerid, dialogid, style, caption[], models[], labels[][], button1[], button2[], limit = sizeof (models), limit2 = sizeof (labels))
 {
 	if (playerid < 0 || playerid >= MAX_PLAYERS)
 		return 0;
@@ -525,8 +484,9 @@ stock ShowPlayerPreviewModelDialog(playerid, dialogid, style, caption[], models[
 
 	Dialog_Init(playerid, style, caption, button1, button2);
 
+ 	p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS]= limit;
  	for (new i; i < limit; i++)
-		Dialog_SetListitemInfo(playerid, (p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS]++), models[i], labels[i], 0.0, 0.0, 0.0, 1.0, -1, -1);
+ 		Dialog_SetListitem(playerid, i, models[i], ((i >= limit2) ? ("") : (labels[i])), 0.0, 0.0, 0.0, 1.0, -1, -1);
 
 	p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
 	p_Dialog[playerid][E_PLAYER_DIALOG_PAGE] = 0;
@@ -784,24 +744,12 @@ stock Dialog_SetListModelRotation(playerid, listitem, Float:x = 0.0, Float:y = 0
 			else
 				index = listitem - (floatround(Float:(listitem - 5), floatround_floor) * 5);
 
-			static varname[45];
-			format(varname, sizeof (varname), "DialogRotX_%i", listitem);
-			SetPVarFloat(playerid, varname, x);
-
-			format(varname, sizeof (varname), "DialogRotY_%i", listitem);
-			SetPVarFloat(playerid, varname, y);
-
-			format(varname, sizeof (varname), "DialogRotZ_%i", listitem);
-			SetPVarFloat(playerid, varname, z);
-
-			format(varname, sizeof (varname), "DialogRotZoom_%i", listitem);
-			SetPVarFloat(playerid, varname, zoom);
-
-			format(varname, sizeof (varname), "DialogColor1_%i", listitem);
-			SetPVarInt(playerid, varname, color1);
-
-			format(varname, sizeof (varname), "DialogColor2_%i", listitem);
-			SetPVarInt(playerid, varname, color2);
+			p_DialogModelRot[playerid][listitem][0] = x;
+			p_DialogModelRot[playerid][listitem][1] = y;
+			p_DialogModelRot[playerid][listitem][2] = z;
+			p_DialogModelRot[playerid][listitem][3] = zoom;
+			p_DialogModelVehCol[playerid][listitem][0] = color1;
+			p_DialogModelVehCol[playerid][listitem][1] = color2;
 
 			PlayerTextDrawSetPreviewRot(playerid, p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_MODEL][index]], x, y, z, zoom);
 			PlayerTextDrawSetPreviewVehCol(playerid, p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_MODEL][index]], color1, color2);
