@@ -509,7 +509,7 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 					Dialog_Exit(playerid);
 
 					new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
-					new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
+					new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID];
 					
 					p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 					p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
@@ -560,7 +560,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 				CancelSelectTextDraw(playerid);
 
 				new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
-				new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
+				new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID];
 
 				p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 				p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
@@ -580,7 +580,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 				CancelSelectTextDraw(playerid);
 
 				new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
-				new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
+				new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID];
 
 				p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 				p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
@@ -658,7 +658,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 						CancelSelectTextDraw(playerid);
 
 						new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
-						new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
+						new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID];
 
 						p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 						p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
