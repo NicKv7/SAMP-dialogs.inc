@@ -747,9 +747,9 @@ stock Dialog_SetModelRot(playerid, listitem, Float:x = 0.0, Float:y = 0.0, Float
 		    	return 0;
 
 			if (p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] == DIALOG_STYLE_PREVMODEL)
-				index = listitem - (floatround(Float:(listitem - 24), floatround_floor) * 24);
-			else
-				index = listitem - (floatround(Float:(listitem - 5), floatround_floor) * 5);
+			    index = listitem - ((listitem / 24) * 24);
+	            	else
+	                    index = listitem - ((listitem / 5) * 5);
 
 			new model, label[DIALOG_MAX_LISTITEM_SIZE], unused;
             Dialog_GetListitem(playerid, listitem, model, label, Float:unused, Float:unused, Float:unused, Float:unused, unused, unused);
