@@ -95,8 +95,7 @@ static Dialog_Create(playerid, Float:posX, Float:posY, string[], bgcolor, font, 
 
 static Dialog_Init(playerid, style, caption[], button1[], button2[])
 {
-	for (new i; i < DIALOG_MAX_TEXT_DRAWS; i++)
-		p_DialogTextDraw[playerid][i] = PlayerText:INVALID_TEXT_DRAW;
+	Dialog_Exit(playerid);
 
 	Dialog_Create(playerid, 173.000000, 122.000000, "_", 50, 1, 0.000000, 0.599999, -1, 0, 0, 1, 1, 1, 200, 462.000000, 19.000000, .show = 1);
 	Dialog_Create(playerid, 173.000000, 121.000000, caption, 50, 1, 0.129998, 0.799998, -36, 0, 0, 1, 1, 0, .show = 1);
@@ -185,13 +184,12 @@ static Dialog_Init(playerid, style, caption[], button1[], button2[])
 
 static Dialog_Exit(playerid)
 {
-	for (new i; i < p_DialogTextDrawPool[playerid]; i++)
-	{
-		PlayerTextDrawHide(playerid, p_DialogTextDraw[playerid][i]);
-		PlayerTextDrawDestroy(playerid, p_DialogTextDraw[playerid][i]);
-
-		p_DialogTextDraw[playerid][i] = PlayerText:INVALID_TEXT_DRAW;
-  	}
+	for (new i; i < DIALOG_MAX_TEXT_DRAWS; i++) {
+	        if(p_DialogTextDraw[playerid][i] != PlayerText:INVALID_TEXT_DRAW) {
+	            PlayerTextDrawDestroy(playerid, p_DialogTextDraw[playerid][i]);
+	            p_DialogTextDraw[playerid][i] = PlayerText:INVALID_TEXT_DRAW;
+	        }
+	    }
 
   	p_DialogTextDrawPool[playerid] = 0;
 }
