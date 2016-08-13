@@ -5,12 +5,12 @@
 
 /*
  * dialogs.inc
- * Version: v2.7.2 (last updated: 11 August, 2016)
+ * Version: v2.7.3 (last updated: 13 August, 2016)
  * By Gammix
  *
  * Functions:
    native ShowPlayerPreviewModelDialog(playerid, dialogid, style, caption[], models[], labels[][], button1[], button2[], limit = sizeof (models));
-   native Dialog_SetListModelRotation(playerid, listitem, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:zoom = 1.0, color1 = -1, color2 = -1);
+   native Dialog_SetModelRot(playerid, listitem, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:zoom = 1.0, color1 = -1, color2 = -1);
  *
  */
 
@@ -90,8 +90,7 @@ static Dialog_Create(playerid, Float:posX, Float:posY, string[], bgcolor, font, 
 	if (show)
 		PlayerTextDrawShow(playerid, p_DialogTextDraw[playerid][p_DialogTextDrawPool[playerid]]);
 
-	p_DialogTextDrawPool[playerid]++;
-	return (p_DialogTextDrawPool[playerid] - 1);
+	return p_DialogTextDrawPool[playerid]++;
 }
 
 static Dialog_Init(playerid, style, caption[], button1[], button2[])
@@ -108,7 +107,7 @@ static Dialog_Init(playerid, style, caption[], button1[], button2[])
 	Dialog_Create(playerid, 454.000000, 135.000000, "_", 50, 1, 0.000000, 18.299997, -1, 0, 0, 1, 1, 1, -106, 452.000000, 19.000000, .show = 1);
 	Dialog_Create(playerid, 461.000000, 135.000000, "_", 50, 1, 0.000000, 18.299997, -1, 0, 0, 1, 1, 1, -106, 459.000000, 19.000000, .show = 1);
 	Dialog_Create(playerid, 462.000000, 134.000000, "_", 50, 1, 0.000000, -0.300001, -1, 0, 0, 1, 1, 1, -106, 174.000000, 19.000000, .show = 1);
-	Dialog_Create(playerid, 462.000000, 304.000000, "_", 50, 1, 0.000000, -0.400001, -1, 0, 0, 1, 1, 1, -106, 173.000000, 19.000000, .show = 1);
+	Dialog_Create(playerid, 462.000000, 304.250000, "_", 50, 1, 0.000000, -0.400001, -1, 0, 0, 1, 1, 1, -106, 173.000000, 19.000000, .show = 1);
 
 	p_DialogCompnent[playerid][E_DIALOG_COMPONENT_SCROLL_UP] = Dialog_Create(playerid, 453.000000, 133.000000, "LD_POOL:ball", 50, 4, 0.500000, 1.000000, -106, 0, 0, 1, 1, 1, 255, 7.000000, 9.00000, .selectable = 1, .show = 1);
 	Dialog_Create(playerid, 454.000000, 134.000000, "LD_BEAT:up", 255, 4, 0.500000, 1.000000, 255, 0, 0, 1, 1, 1, 255, 5.000000, 6.000000, .show = 1);
@@ -131,7 +130,7 @@ static Dialog_Init(playerid, style, caption[], button1[], button2[])
 
 		Dialog_Create(playerid, 372.000000, 310.000000, "_", 50, 1, 0.000000, -0.400001, -1, 0, 0, 1, 1, 1, -106, 323.000000, 19.000000, .show = 1);
 		Dialog_Create(playerid, 372.000000, 324.000000, "_", 50, 1, 0.000000, -0.400001, -1, 0, 0, 1, 1, 1, -106, 323.000000, 19.000000, .show = 1);
-		Dialog_Create(playerid, 323.000000, 304.000000, "(", 0, 1, 0.210000, 2.000000, -106, 0, 0, 1, 1, .show = 1);
+		Dialog_Create(playerid, 322.000000, 304.000000, "(", 0, 1, 0.200000, 2.000000, -106, 0, 0, 1, 1, .show = 1);
 		Dialog_Create(playerid, 369.000000, 304.000000, ")", 0, 1, 0.230000, 1.999999, -106, 0, 0, 1, 1, .show = 1);
 		p_DialogCompnent[playerid][E_DIALOG_COMPONENT_BUTTON2] = Dialog_Create(playerid, 324.000000, 309.000000, "ld_plan:tvbase", 50, 4, 0.000000, 0.899998, 255, 0, 0, 1, 1, 1, 255, 46.000000, 13.000000, .selectable = 1, .show = 1);
 		Dialog_Create(playerid, 348.000000, 311.000000, button2, 50, 1, 0.140000, 0.899999, -36, 2, 0, 1, 1, 0, .show = 1);
@@ -204,7 +203,7 @@ static Dialog_GetListitem(playerid, listitem, &model, label[], &Float:x, &Float:
 	GetPVarString(playerid, string, string, DIALOG_MAX_LISTITEM_SIZE);
 
 	static dest[(DIALOG_MAX_LISTITEM_SIZE / 2)];
-	
+
 	new type;
 	new pos;
 	for (new i; i < DIALOG_MAX_LISTITEM_SIZE; i++)
@@ -234,7 +233,7 @@ static Dialog_SetListitem(playerid, listitem, model, label[], Float:x, Float:y, 
 {
 	static string[DIALOG_MAX_LISTITEM_SIZE];
 	format(string, DIALOG_MAX_LISTITEM_SIZE, "%i|%s|%f|%f|%f|%f|%i|%i", model, label, x, y, z, zoom, color1, color2);
-	
+
 	static varname[45];
 	format(varname, sizeof (varname), "DialogListitem_%i", listitem);
 	SetPVarString(playerid, varname, string);
@@ -383,6 +382,13 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
 
 	CallRemoteFunction("Dialog_HideForPlayer", "i", playerid);
 
+	if (dialogid < 0)
+	{
+		p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
+		p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
+	    return 1;
+	}
+	
 	p_Dialog[playerid][E_PLAYER_DIALOG_ID] = dialogid;
 	p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = style;
 
@@ -391,14 +397,6 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
 		case DIALOG_STYLE_PREVMODEL,
 			 DIALOG_STYLE_PREVMODEL_LIST:
 		{
-			if (dialogid < 0)
-			{
-				p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
-				p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
-
-			    return 1;
-			}
-
 			Dialog_Init(playerid, style, caption, button1, button2);
 
 			new pos;
@@ -448,7 +446,7 @@ stock Dialog_ShowToPlayer(playerid, dialogid, style, caption[], info[], button1[
 		default:
 			ShowPlayerDialog(playerid, dialogid, style, caption, info, button1, button2);
 	}
-
+	
 	return 1;
 }
 #if defined _ALS_ShowPlayerDialog
@@ -510,12 +508,9 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 				{
 					Dialog_Exit(playerid);
 
-					p_Dialog[playerid][E_PLAYER_DIALOG_CANCELED] = true;
-					CancelSelectTextDraw(playerid);
-
-	    			if (funcidx("OnDialogResponse") != -1)
-						CallRemoteFunction("OnDialogResponse", "iiiis", playerid, p_Dialog[playerid][E_PLAYER_DIALOG_ID], 0, p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID], "\1");
-
+					new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
+					new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
+					
 					p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 					p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
 					p_Dialog[playerid][E_PLAYER_DIALOG_DUAL_BTN] = false;
@@ -523,6 +518,9 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 					p_Dialog[playerid][E_PLAYER_DIALOG_PAGE] = 0;
 					p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
 					p_Dialog[playerid][E_PLAYER_DIALOG_CLICK_TICKCOUNT] = 0;
+					
+	    			if (funcidx("OnDialogResponse") != -1)
+						CallRemoteFunction("OnDialogResponse", "iiiis", playerid, dialogid, 0, listitem, "\1");
 				}
 
 				return 1;
@@ -557,12 +555,12 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 		{
 			if (playertextid == p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_BUTTON2]])
 			{
-				Dialog_Exit(playerid);
-
+    			Dialog_Exit(playerid);
 				p_Dialog[playerid][E_PLAYER_DIALOG_CANCELED] = true;
 				CancelSelectTextDraw(playerid);
 
-				CallRemoteFunction("OnDialogResponse", "iiiis", playerid, p_Dialog[playerid][E_PLAYER_DIALOG_ID], 0, p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID], "\1");
+				new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
+				new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
 
 				p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 				p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
@@ -571,15 +569,18 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 				p_Dialog[playerid][E_PLAYER_DIALOG_PAGE] = 0;
 				p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
 				p_Dialog[playerid][E_PLAYER_DIALOG_CLICK_TICKCOUNT] = 0;
+
+	    		if (funcidx("OnDialogResponse") != -1)
+					CallRemoteFunction("OnDialogResponse", "iiiis", playerid, dialogid, 0, listitem, "\1");
 			}
 			else if (playertextid == p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_BUTTON1]] || playertextid == p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_BUTTONC]])
 			{
-				Dialog_Exit(playerid);
-
+    			Dialog_Exit(playerid);
 				p_Dialog[playerid][E_PLAYER_DIALOG_CANCELED] = true;
 				CancelSelectTextDraw(playerid);
 
-				CallRemoteFunction("OnDialogResponse", "iiiis", playerid, p_Dialog[playerid][E_PLAYER_DIALOG_ID], 1, p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID], "\1");
+				new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
+				new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
 
 				p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 				p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
@@ -588,6 +589,9 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 				p_Dialog[playerid][E_PLAYER_DIALOG_PAGE] = 0;
 				p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
 				p_Dialog[playerid][E_PLAYER_DIALOG_CLICK_TICKCOUNT] = 0;
+				
+				if (funcidx("OnDialogResponse") != -1)
+					CallRemoteFunction("OnDialogResponse", "iiiis", playerid, dialogid, 1, listitem, "\1");
 			}
 			else if (playertextid == p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_SCROLL_UP]])
 			{
@@ -650,11 +654,11 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 					if (GetTickCount() - p_Dialog[playerid][E_PLAYER_DIALOG_CLICK_TICKCOUNT] <= 200)
 					{
 						Dialog_Exit(playerid);
-
 						p_Dialog[playerid][E_PLAYER_DIALOG_CANCELED] = true;
 						CancelSelectTextDraw(playerid);
 
-						CallRemoteFunction("OnDialogResponse", "iiiis", playerid, p_Dialog[playerid][E_PLAYER_DIALOG_ID], 1, p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID], "\1");
+						new dialogid = p_Dialog[playerid][E_PLAYER_DIALOG_ID];
+						new listitem = p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEMS];
 
 						p_Dialog[playerid][E_PLAYER_DIALOG_ID] = -1;
 						p_Dialog[playerid][E_PLAYER_DIALOG_STYLE] = -1;
@@ -663,6 +667,9 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
 						p_Dialog[playerid][E_PLAYER_DIALOG_PAGE] = 0;
 						p_Dialog[playerid][E_PLAYER_DIALOG_LISTITEM_ID] = 0;
 						p_Dialog[playerid][E_PLAYER_DIALOG_CLICK_TICKCOUNT] = 0;
+
+						if (funcidx("OnDialogResponse") != -1)
+							CallRemoteFunction("OnDialogResponse", "iiiis", playerid, dialogid, 1, listitem, "\1");
 					}
 					else
 					{
@@ -722,7 +729,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid)
     forward Dialog_OnPlayerClickPlayerTD(playerid, PlayerText:playertextid);
 #endif
 
-stock Dialog_SetListModelRotation(playerid, listitem, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:zoom = 1.0, color1 = -1, color2 = -1)
+stock Dialog_SetModelRot(playerid, listitem, Float:x = 0.0, Float:y = 0.0, Float:z = 0.0, Float:zoom = 1.0, color1 = -1, color2 = -1)
 {
 	if (playerid < 0 || playerid >= MAX_PLAYERS)
 		return 0;
@@ -744,12 +751,9 @@ stock Dialog_SetListModelRotation(playerid, listitem, Float:x = 0.0, Float:y = 0
 			else
 				index = listitem - (floatround(Float:(listitem - 5), floatround_floor) * 5);
 
-			p_DialogModelRot[playerid][listitem][0] = x;
-			p_DialogModelRot[playerid][listitem][1] = y;
-			p_DialogModelRot[playerid][listitem][2] = z;
-			p_DialogModelRot[playerid][listitem][3] = zoom;
-			p_DialogModelVehCol[playerid][listitem][0] = color1;
-			p_DialogModelVehCol[playerid][listitem][1] = color2;
+			new model, label[DIALOG_MAX_LISTITEM_SIZE], unused;
+            Dialog_GetListitem(playerid, listitem, model, label, Float:unused, Float:unused, Float:unused, Float:unused, unused, unused);
+            Dialog_SetListitem(playerid, listitem, model, label, x, y, z, zoom, color1, color2);
 
 			PlayerTextDrawSetPreviewRot(playerid, p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_MODEL][index]], x, y, z, zoom);
 			PlayerTextDrawSetPreviewVehCol(playerid, p_DialogTextDraw[playerid][p_DialogCompnent[playerid][E_DIALOG_COMPONENT_MODEL][index]], color1, color2);
